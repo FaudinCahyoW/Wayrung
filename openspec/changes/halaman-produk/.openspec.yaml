@@ -1,0 +1,4 @@
+schema: spec-driven
+created: 2026-09-09
+goal: Membangun halaman /produk sesuai desain dengan daftar produk, filter
+  kategori, sort, pagination, dan fitur tambah/edit/hapus produk & kategori
