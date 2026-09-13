@@ -11,6 +11,12 @@ require (
 )
 
 require (
+	github.com/joho/godotenv v1.5.1 // indirect
+	github.com/spyzhov/ajson v0.8.0 // indirect
+)
+
+require (
+	github.com/OpenRouterTeam/go-sdk v0.7.132
 	github.com/bytedance/gopkg v0.1.3 // indirect
 	github.com/bytedance/sonic v1.15.0 // indirect
 	github.com/bytedance/sonic/loader v0.5.0 // indirect
@@ -38,7 +44,7 @@ require (
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/quic-go/quic-go v0.59.0 // indirect
 	github.com/rs/cors v1.11.1 // indirect
-	github.com/rs/cors/wrapper/gin v0.0.0-20260604061346-2f30c9cf7731 // indirect
+	github.com/rs/cors/wrapper/gin v0.0.0-20260604061346-2f30c9cf7731
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.1 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.5.0 // indirect

@@ -22,6 +22,9 @@ type ProductRepository interface {
 	Delete(id uint) error
 	// UpdateStock mengurangi stok produk saat transaksi terjadi.
 	UpdateStock(tx *gorm.DB, productID uint, quantity int) error
+	// Cari Produk berdasarakan nama/keyword secara fleksibel
+	FindByName(name string) ([]model.Products, error)
+
 }
 
 // ProductRepositoryImpl merupakan implementasi dari ProductRepository menggunakan GORM.
@@ -103,4 +106,10 @@ func (r *ProductRepositoryImpl) UpdateStock(tx *gorm.DB, productID uint, quantit
 		db = tx
 	}
 	return db.Model(&model.Products{}).Where("id = ?", productID).UpdateColumn("stock", gorm.Expr("stock - ?", quantity)).Error
+}
+
+func (r *ProductRepositoryImpl) FindByName(name string) ([]model.Products, error) {
+    var products []model.Products
+    err := r.db.Where("name ILIKE ? OR sku ILIKE ?", "%"+name+"%", "%"+name+"%").Find(&products).Error
+    return products, err
 }

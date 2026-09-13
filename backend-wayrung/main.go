@@ -2,20 +2,24 @@ package main
 
 import (
 	"log"
+	"os"
 	"wayrung/config"
 	"wayrung/handler"
 	"wayrung/repository"
 	"wayrung/routes"
 	"wayrung/service"
+	"github.com/joho/godotenv"
 )
 
 // main merupakan entrypoint utama aplikasi backend Wayrung.
 // Fungsi ini menginisialisasi database, repository, service, handler, dan menjalankan server HTTP.
 func main() {
+	if err := godotenv.Load(); err != nil { // <-- 2. Tambahkan baris ini
+		log.Println("Peringatan: File .env tidak ditemukan, menggunakan env sistem")
+	}
 	// 1. Inisialisasi Koneksi Database & Auto Migration
 	db := config.InitDB()
 	config.SeedDB(db)
-
 
 	// 2. Inisialisasi Repository Layer
 	userRepo := repository.NewUserRepository(db)
@@ -25,6 +29,7 @@ func main() {
 	settingsRepo := repository.NewSettingsRepository(db)
 	notificationRepo := repository.NewNotificationRepository(db)
 	auditLogRepo := repository.NewAuditLogRepository(db)
+	reportRepo := repository.NewReportRepository(db)
 
 	// 3. Inisialisasi Service Layer
 	authService := service.NewAuthService(userRepo, settingsRepo)
@@ -34,6 +39,11 @@ func main() {
 	settingsService := service.NewSettingsService(settingsRepo)
 	notificationService := service.NewNotificationService(notificationRepo)
 	auditLogService := service.NewAuditLogService(auditLogRepo)
+	reportService := service.NewReportService(reportRepo)
+
+	// Inisialisasi AI Service
+	openRouterKey := os.Getenv("OPENROUTER_API_KEY")
+	aiService := service.NewAIService(openRouterKey, productRepo, reportRepo)
 
 	// 4. Inisialisasi Handler Layer
 	authHandler := handler.NewAuthHandler(authService)
@@ -43,6 +53,10 @@ func main() {
 	settingsHandler := handler.NewSettingsHandler(settingsService)
 	notificationHandler := handler.NewNotificationHandler(notificationService)
 	auditLogHandler := handler.NewAuditLogHandler(auditLogService)
+	reportHandler := handler.NewReportHandler(reportService)
+	
+	// Inisialisasi Chat Handler
+	chatHandler := handler.NewChatHandler(aiService)
 
 	// 5. Inisialisasi Router Gin
 	r := routes.SetupRouter(
@@ -53,6 +67,8 @@ func main() {
 		settingsHandler,
 		notificationHandler,
 		auditLogHandler,
+		reportHandler,
+		chatHandler,
 	)
 
 	// 6. Jalankan Server HTTP pada port 8080 (atau variabel SERVER_PORT)
