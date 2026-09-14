@@ -24,7 +24,6 @@ type ProductRepository interface {
 	UpdateStock(tx *gorm.DB, productID uint, quantity int) error
 	// Cari Produk berdasarakan nama/keyword secara fleksibel
 	FindByName(name string) ([]model.Products, error)
-
 }
 
 // ProductRepositoryImpl merupakan implementasi dari ProductRepository menggunakan GORM.

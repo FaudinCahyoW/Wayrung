@@ -18,7 +18,7 @@ func SetupRouter(
 	notificationHandler *handler.NotificationHandler,
 	auditLogHandler *handler.AuditLogHandler,
 	reportHandler *handler.ReportHandler,
-	chatHandler *handler.ChatHandler, // <-- 1. Tambahkan chatHandler di sini
+	chatHandler *handler.ChatHandler,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -82,7 +82,13 @@ func SetupRouter(
 		protected.PUT("/settings", settingsHandler.UpdateSettings)
 
 		// AI Chatbot (Owner & Kasir dapat menggunakan)
-		protected.POST("/chat", chatHandler.HandleChat) // <-- 2. Tambahkan endpoint /chat di grup protected
+		protected.POST("/chat", chatHandler.HandleChat)
+
+		// 🟢 LAPORAN: Dipindahkan ke sini agar Kasir & Owner sama-sama bisa membaca data
+		protected.GET("/reports/summary", reportHandler.GetSummary)
+		protected.GET("/reports/sales-chart", reportHandler.GetSalesChart)
+		protected.GET("/reports/top-products", reportHandler.GetTopProducts)
+		protected.GET("/reports/payment-methods", reportHandler.GetPaymentMethods)
 	}
 
 	// 3. Endpoint Terproteksi Khusus Role 'owner' (Owner-only endpoints)
@@ -101,12 +107,6 @@ func SetupRouter(
 
 		// Penelusuran Log Audit oleh Owner
 		ownerOnly.GET("/audit-logs", auditLogHandler.FindAll)
-
-		// Laporan (agregasi transaksi & stok) — data finansial sensitif, khusus Owner
-		ownerOnly.GET("/reports/summary", reportHandler.GetSummary)
-		ownerOnly.GET("/reports/sales-chart", reportHandler.GetSalesChart)
-		ownerOnly.GET("/reports/top-products", reportHandler.GetTopProducts)
-		ownerOnly.GET("/reports/payment-methods", reportHandler.GetPaymentMethods)
 	}
 
 	return r

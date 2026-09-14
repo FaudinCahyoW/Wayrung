@@ -189,13 +189,14 @@ func seedTransactions(db *gorm.DB, owner, kasir model.Users, products []model.Pr
 		return
 	}
 
-	var count int64
-	db.Model(&model.Transactions{}).Count(&count)
-	if count > 0 {
-		return
-	}
+	// ❌ HAPUS ATAU COMMENT BAGIAN INI AGAR SEEDER TETAP JALAN:
+	// var count int64
+	// db.Model(&model.Transactions{}).Count(&count)
+	// if count > 0 {
+	// 	return
+	// }
 
-	paymentMethods := []string{"Tunai", "Transfer bank", "QRIS"}
+	paymentMethods := []string{"Tunai", "QRIS", "Transfer bank"}
 	now := time.Now()
 
 	type item struct {
@@ -210,25 +211,20 @@ func seedTransactions(db *gorm.DB, owner, kasir model.Users, products []model.Pr
 		items   []item
 	}
 
+	// Transaksi yang dijamin masuk ke hari ini & bulan ini
 	seeds := []txSeed{
-		{6, 9, "sale", kasir, []item{{0, 3}, {2, 2}}},
-		{6, 8, "purchase", owner, []item{{1, 20}}},
-		{5, 10, "sale", kasir, []item{{2, 5}}},
-		{5, 16, "sale", owner, []item{{3, 2}}},
-		{4, 11, "purchase", owner, []item{{4, 100}}},
-		{4, 14, "sale", kasir, []item{{0, 2}, {6, 3}}},
-		{3, 9, "sale", kasir, []item{{7, 4}}},
-		{3, 15, "sale", owner, []item{{2, 3}}},
-		{2, 10, "purchase", owner, []item{{5, 200}}},
-		{2, 13, "sale", kasir, []item{{0, 1}, {3, 1}}},
+		{0, 10, "sale", kasir, []item{{0, 2}, {2, 1}}}, 
+		{0, 13, "sale", kasir, []item{{1, 3}, {6, 2}}}, 
+		{0, 15, "sale", owner, []item{{7, 4}}},         
+		{0, 8, "purchase", owner, []item{{5, 100}}},    
 		{1, 9, "sale", kasir, []item{{6, 2}, {7, 2}}},
 		{1, 17, "sale", owner, []item{{2, 4}}},
-		{0, 9, "sale", kasir, []item{{0, 3}, {2, 2}}},
-		{0, 8, "purchase", owner, []item{{1, 20}}},
 	}
 
 	for i, s := range seeds {
-		date := time.Date(now.Year(), now.Month(), now.Day()-s.daysAgo, s.hour, 0, 0, 0, now.Location())
+		// Set tanggal & jam spesifik berbasis time.Now()
+		date := now.AddDate(0, 0, -s.daysAgo)
+		date = time.Date(date.Year(), date.Month(), date.Day(), s.hour, 30, 0, 0, date.Location())
 
 		var total float64
 		var details []model.TransactionDetails
@@ -258,11 +254,11 @@ func seedTransactions(db *gorm.DB, owner, kasir model.Users, products []model.Pr
 			Details:         details,
 		}
 		if err := db.Create(&tx).Error; err != nil {
-			log.Printf("[SEEDER] Gagal seed transaksi ke-%d: %v", i, err)
+			log.Printf("[SEEDER] Gagal seed transaksi: %v", err)
 		}
 	}
 
-	log.Println("[SEEDER] Berhasil membuat 14 transaksi contoh.")
+	log.Println("[SEEDER] Berhasil menambahkan transaksi baru hari ini!")
 }
 
 // seedNotifications membuat notifikasi stok menipis + notifikasi transaksi contoh

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	openrouter "github.com/OpenRouterTeam/go-sdk"
@@ -64,6 +65,7 @@ func (s *aiService) AskBot(ctx context.Context, userQuery string) (string, error
 	toolCall := choice.Message.ToolCalls[0]
 
 	switch toolCall.Function.Name {
+	// Cek Omzet Hari Ini
 	case "get_omzet_hari_ini":
 		now := time.Now()
 		start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
@@ -81,8 +83,9 @@ func (s *aiService) AskBot(ctx context.Context, userQuery string) (string, error
 				break
 			}
 		}
-		return fmt.Sprintf("Total omzet toko hari ini adalah Rp %.0f", totalOmzet), nil
+		return fmt.Sprintf("Total omzet toko hari ini adalah Rp %s", formatRupiah(totalOmzet)), nil
 
+	// Cari stok berdasarkan nama barang
 	case "get_stok_barang":
 		var args struct {
 			NamaBarang string `json:"nama_barang"`
@@ -94,15 +97,116 @@ func (s *aiService) AskBot(ctx context.Context, userQuery string) (string, error
 			return fmt.Sprintf("Produk dengan kata kunci '%s' tidak ditemukan.", args.NamaBarang), nil
 		}
 
-		var result string
+		var sb strings.Builder
+		sb.WriteString("Berikut informasi stok produk yang ditemukan:\n")
 		for _, p := range products {
-			result += fmt.Sprintf("- %s (SKU: %s): stok tersisa %d pcs\n", p.Name, p.SKU, p.Stock)
+			sb.WriteString(fmt.Sprintf("- %s (SKU: %s): stok tersisa %d pcs\n", p.Name, p.SKU, p.Stock))
 		}
-		return fmt.Sprintf("Berikut informasi stok produk yang ditemukan:\n%s", result), nil
+		return sb.String(), nil
+
+	// Tampilkan Semua Stok Barang
+	case "get_stok_all_barang":
+		products, err := s.productRepo.FindAll()
+		if err != nil || len(products) == 0 {
+			return "Gagal mengambil daftar produk atau belum ada produk tersimpan.", nil
+		}
+
+		var sb strings.Builder
+		sb.WriteString("Berikut adalah daftar stok seluruh produk:\n")
+		for _, p := range products {
+			sb.WriteString(fmt.Sprintf("- %s: %d pcs\n", p.Name, p.Stock))
+		}
+		return sb.String(), nil
+
+	// Tampilkan stok yang mulai menipis
+	case "get_stok_menipis":
+		products, err := s.reportRepo.FindLowStock(5)
+		if err != nil {
+			return "Gagal mengambil daftar produk stok menipis.", nil
+		}
+		if len(products) == 0 {
+			return "Semua stok produk saat ini dalam kondisi aman (tidak ada yang menipis).", nil
+		}
+
+		var sm strings.Builder
+		sm.WriteString("⚠️ **Daftar Produk Stok Menipis (<= 5 pcs):**\n")
+		for _, p := range products {
+			sm.WriteString(fmt.Sprintf("- %s (SKU: %s): sisa %d pcs\n", p.Name, p.SKU, p.Stock))
+		}
+		return sm.String(), nil
+
+	// Tampilkan produk yang paling laris (Disamakan nama tool-nya dengan ai_tools.go)
+	case "get_top_barang":
+		now := time.Now()
+		start := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+		end := now
+
+		topProducts, err := s.reportRepo.GetTopProducts(start, end, 5)
+		if err != nil {
+			return "Gagal mengambil data produk terlaris.", nil
+		}
+		if len(topProducts) == 0 {
+			return "Belum ada data penjualan produk untuk bulan ini.", nil
+		}
+
+		var sb strings.Builder
+		sb.WriteString("🔥 **Top 5 Produk Terlaris Bulan Ini:**\n")
+		for i, p := range topProducts {
+			sb.WriteString(fmt.Sprintf("%d. %s - Terjual: %d pcs (Omzet: Rp %s)\n",
+				i+1, p.ProductName, p.QuantitySold, formatRupiah(p.Revenue)))
+		}
+		return sb.String(), nil
+
+	// Mengambil laporan metode pembayaran
+	case "get_laporan_pembayaran":
+		now := time.Now()
+		start := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+		end := now
+
+		paymentMethods, err := s.reportRepo.GetPaymentMethodTotals(start, end)
+		if err != nil {
+			return "Gagal mengambil data transaksi pembayaran.", nil
+		}
+		if len(paymentMethods) == 0 {
+			return "Belum ada data transaksi pembayaran untuk bulan ini.", nil
+		}
+
+		var sb strings.Builder
+		sb.WriteString("💳 **Laporan Metode Pembayaran Bulan Ini:**\n")
+		for i, p := range paymentMethods {
+			sb.WriteString(fmt.Sprintf("%d. %s - Total: Rp %s\n",
+				i+1, p.PaymentMethod, formatRupiah(p.TotalAmount)))
+		}
+		return sb.String(), nil
 	}
 
 	if content, ok := choice.Message.Content.Get(); ok && content != nil && content.Str != nil {
 		return *content.Str, nil
 	}
 	return "", nil
+}
+
+// 📍 FUNGSI HELPER FORMAT RUPIAH DITARUH DI SINI (PALING BAWAH FILE)
+func formatRupiah(amount float64) string {
+	str := fmt.Sprintf("%.0f", amount)
+	n := len(str)
+	if n <= 3 {
+		return str
+	}
+
+	var result strings.Builder
+	remainder := n % 3
+	if remainder > 0 {
+		result.WriteString(str[:remainder])
+		result.WriteString(".")
+	}
+
+	for i := remainder; i < n; i += 3 {
+		result.WriteString(str[i : i+3])
+		if i+3 < n {
+			result.WriteString(".")
+		}
+	}
+
+	return result.String()
 }

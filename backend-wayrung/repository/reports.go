@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"wayrung/dto"
+	"wayrung/model"
 
 	"gorm.io/gorm"
 )
@@ -43,6 +44,8 @@ type ReportRepository interface {
 	GetTopProducts(start, end time.Time, limit int) ([]dto.TopProduct, error)
 	// GetPaymentMethodTotals menghitung total nominal transaksi "sale" per metode pembayaran.
 	GetPaymentMethodTotals(start, end time.Time) ([]PaymentAggregateRow, error)
+	// FindLowStock menampilkan produk paling laris
+	FindLowStock(limit int) ([]model.Products, error)
 }
 
 // ReportRepositoryImpl merupakan implementasi dari ReportRepository menggunakan GORM.
@@ -109,4 +112,17 @@ func (r *ReportRepositoryImpl) GetPaymentMethodTotals(start, end time.Time) ([]P
 		Order("total_amount DESC").
 		Scan(&rows).Error
 	return rows, err
+}
+
+// FindLowStock mengambil produk yang stoknya di bawah atau sama dengan threshold (limit)
+func (r *ReportRepositoryImpl) FindLowStock(limit int) ([]model.Products, error) {
+	var products []model.Products
+
+	// Query GORM: Ambil produk yang stoknya <= limit, diurutkan dari yang paling sedikit
+	err := r.db.Table("products").
+		Where("stock <= ?", limit).
+		Order("stock ASC").
+		Find(&products).Error
+
+	return products, err
 }
