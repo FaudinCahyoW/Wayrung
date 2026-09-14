@@ -338,7 +338,7 @@ export default function LoginPage() {
         {/* Footer */}
         <div className="mt-8 text-center text-xs text-slate-500">
           Belum punya akun?{" "}
-          <a href="#" className="text-indigo-400 font-medium hover:underline">
+          <a href="/register" className="text-indigo-400 font-medium hover:underline">
             Daftar sekarang
           </a>
         </div>
