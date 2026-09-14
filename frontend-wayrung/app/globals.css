@@ -1,0 +1,756 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Variabel Tema & Warna Utama Aplikasi Wayrung / Toko.in
+   Sesuai dengan panduan desain UI Toko.in
+   ========================================================================== */
+:root {
+  /* Skema warna utama (Purple theme) */
+  --purple: #7959FF;
+  --purple-deep: #5F3FE0;
+  --purple-tint: #F2EFFF;
+  --purple-tint-2: #E7E1FF;
+
+  /* Skema warna teks (Ink/Tinta) */
+  --ink: #1B1730;
+  --ink-soft: #6B667E;
+  --line: #ECEAF4;
+  --white: #FFFFFF;
+
+  /* Skema warna status (Hijau = Pemasukan, Kuning/Amber = Peringatan, Merah = Pengeluaran/Kritis) */
+  --green: #1AA179;
+  --green-tint: #E6F7F1;
+  --amber: #C9861A;
+  --amber-tint: #FBF1DF;
+  --red: #D6472E;
+  --red-tint: #FBEAE7;
+
+  /* Radius sudut komponen */
+  --radius-s: 10px;
+  --radius-m: 16px;
+  --radius-l: 22px;
+}
+
+/* Pengaturan Dasar Body
+   Font Plus Jakarta Sans dimuat lewat next/font di layout.tsx (var(--font-jakarta)),
+   BUKAN lewat @import di sini — jangan tambahkan @import font lagi di file ini. */
+body {
+  font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  background: var(--white);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Utility Font Monospace untuk Angka & SKU */
+.mono {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* ==========================================================================
+   Layout Shell Dashboard (Sidebar Desktop + Konten Utama)
+   ========================================================================== */
+.dashboard-shell {
+  display: grid;
+  grid-template-columns: 232px 1fr;
+  min-height: 100vh;
+}
+
+/* Sidebar Desktop */
+.dashboard-sidebar {
+  background: var(--purple);
+  color: #ffffff;
+  padding: 28px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.dashboard-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+  padding-bottom: 30px;
+}
+
+.dashboard-brand-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.dashboard-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.dashboard-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 11px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.72);
+  transition: background 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+}
+
+.dashboard-nav-item svg {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+}
+
+.dashboard-nav-item:hover {
+  background: rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+}
+
+.dashboard-nav-item.active {
+  background: rgba(255, 255, 255, 0.97);
+  color: var(--purple-deep);
+}
+
+.dashboard-sidebar-foot {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  padding-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Header Topbar & Area Konten Utama
+   ========================================================================== */
+.dashboard-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.dashboard-topbar {
+  background: var(--purple);
+  color: #ffffff;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.dashboard-topbar h1 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.dashboard-topbar .sub {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.68);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.dashboard-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dashboard-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 11px;
+  padding: 9px 14px;
+  width: 230px;
+}
+
+.dashboard-search input {
+  background: none;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13.5px;
+  width: 100%;
+}
+
+.dashboard-search input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.dashboard-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.dashboard-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.dashboard-dot-badge {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #FF6B57;
+  border: 1.5px solid var(--purple);
+}
+
+.dashboard-topbar-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* ==========================================================================
+   Hero Banner & Grid Kartu Ringkasan Statistik
+   ========================================================================== */
+.dashboard-content {
+  padding: 30px 32px 100px;
+  flex: 1;
+}
+
+.dashboard-greet-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dashboard-greet-row h2 {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.dashboard-greet-row p {
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  margin-top: 4px;
+}
+
+.dashboard-btn-primary {
+  background: var(--purple);
+  color: #ffffff;
+  padding: 11px 18px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 10px 20px -8px rgba(121, 89, 255, 0.55);
+  transition: transform 0.15s ease, background 0.15s ease;
+  cursor: pointer;
+}
+
+.dashboard-btn-primary:hover {
+  transform: translateY(-1px);
+  background: var(--purple-deep);
+}
+
+/* Banner Hero Statistik Pendapatan */
+.dashboard-hero-stat {
+  background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%);
+  border-radius: var(--radius-l);
+  padding: 26px 28px;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-hero-stat::before {
+  content: "";
+  position: absolute;
+  right: -60px;
+  top: -60px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dashboard-hero-stat::after {
+  content: "";
+  position: absolute;
+  right: 60px;
+  bottom: -90px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dashboard-hero-left {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-hero-left .lbl {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 600;
+}
+
+.dashboard-hero-left .num {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-top: 6px;
+}
+
+.dashboard-hero-left .num span {
+  font-size: 19px;
+  font-weight: 700;
+  opacity: 0.75;
+}
+
+.dashboard-hero-trend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.16);
+  padding: 5px 10px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.dashboard-hero-right {
+  display: flex;
+  gap: 28px;
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-hero-mini .lbl {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 600;
+}
+
+.dashboard-hero-mini .val {
+  font-size: 18px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+/* Grid Kartu Ringkasan */
+.dashboard-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 26px;
+}
+
+.dashboard-stat-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  padding: 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #ffffff;
+}
+
+.dashboard-stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-stat-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-stat-icon.green {
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+.dashboard-stat-icon.amber {
+  background: var(--amber-tint);
+  color: var(--amber);
+}
+
+.dashboard-stat-icon.red {
+  background: var(--red-tint);
+  color: var(--red);
+}
+
+.dashboard-stat-change {
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.dashboard-stat-change.up {
+  color: var(--green);
+}
+
+.dashboard-stat-change.down {
+  color: var(--red);
+}
+
+.dashboard-stat-card .val {
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.dashboard-stat-card .lbl {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Split Panel: Transaksi Terbaru & Stok Menipis
+   ========================================================================== */
+.dashboard-split {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.dashboard-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.dashboard-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+}
+
+.dashboard-panel-head h3 {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.dashboard-panel-head a {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--purple);
+  cursor: pointer;
+}
+
+.dashboard-tx-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--line);
+}
+
+.dashboard-tx-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dashboard-tx-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.dashboard-tx-icon.in {
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+.dashboard-tx-icon.out {
+  background: var(--red-tint);
+  color: var(--red);
+}
+
+.dashboard-tx-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-tx-body .name {
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.dashboard-tx-body .meta {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+.dashboard-tx-amt {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.dashboard-tx-amt .n {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.dashboard-tx-amt .n.pos {
+  color: var(--green);
+}
+
+.dashboard-tx-amt .n.neg {
+  color: var(--red);
+}
+
+.dashboard-tx-amt .t {
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+.dashboard-stock-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 20px;
+  border-top: 1px solid var(--line);
+}
+
+.dashboard-stock-thumb {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--purple-tint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--purple-deep);
+  flex-shrink: 0;
+}
+
+.dashboard-stock-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-stock-body .name {
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.dashboard-stock-body .sku {
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+.dashboard-stock-tag {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--amber-tint);
+  color: var(--amber);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.dashboard-stock-tag.crit {
+  background: var(--red-tint);
+  color: var(--red);
+}
+
+.dashboard-panel-foot-btn {
+  display: block;
+  text-align: center;
+  padding: 13px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--purple);
+  border-top: 1px solid var(--line);
+  cursor: pointer;
+  background: none;
+  width: 100%;
+}
+
+/* ==========================================================================
+   Komponen Responsif Layar Mobile (Navigasi Bawah & Floating Action Button)
+   ========================================================================== */
+.dashboard-bottom-nav {
+  display: none;
+}
+
+.dashboard-fab {
+  display: none;
+}
+
+@media (max-width: 980px) {
+  .dashboard-shell {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-sidebar {
+    display: none;
+  }
+  .dashboard-stat-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .dashboard-split {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-content {
+    padding: 22px 18px 96px;
+  }
+  .dashboard-topbar {
+    padding: 16px 18px;
+  }
+  .dashboard-search {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .dashboard-stat-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-hero-stat {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .dashboard-hero-right {
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .dashboard-greet-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .dashboard-greet-row .dashboard-btn-primary {
+    display: none;
+  }
+
+  .dashboard-bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border-top: 1px solid var(--line);
+    padding: 9px 8px 10px;
+    z-index: 20;
+  }
+
+  .dashboard-bn-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    cursor: pointer;
+  }
+
+  .dashboard-bn-item svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .dashboard-bn-item.active {
+    color: var(--purple);
+  }
+
+  .dashboard-fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 64px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--purple);
+    color: #ffffff;
+    box-shadow: 0 14px 24px -8px rgba(121, 89, 255, 0.6);
+    z-index: 21;
+    cursor: pointer;
+  }
+
+  .dashboard-fab svg {
+    width: 24px;
+    height: 24px;
+  }
+}
